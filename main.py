@@ -4,7 +4,7 @@ from ultralytics import YOLO
 model = YOLO('best.pt')
 model.predict(classes=[13])
 
-videopath = ('videos/5.mp4')
+videopath = ('videos/7.MP4')
 cap = cv2.VideoCapture(videopath)
 
 # Get video properties
@@ -14,7 +14,9 @@ fps = cap.get(cv2.CAP_PROP_FPS)
 
 # Define the codec and create VideoWriter object
 fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-out = cv2.VideoWriter('videos/output4.mp4', fourcc, fps, (frame_width, frame_height))
+
+
+out = cv2.VideoWriter('videos/output7.mp4', fourcc, fps, (frame_width, frame_height))
 
 ret = True
 
