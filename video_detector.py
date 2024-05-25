@@ -1,11 +1,14 @@
 import cv2
 from ultralytics import YOLO
 
+file_name = input("Enter video name (without .mp4): ")
+input_file = "videos/" + file_name + ".mp4"
+output_file = "videos/" + file_name + "_out.mp4"
+
 model = YOLO('best.pt')
 model.predict(classes=[13])
 
-videopath = ('videos/7.MP4')
-cap = cv2.VideoCapture(videopath)
+cap = cv2.VideoCapture(input_file)
 
 # Get video properties
 frame_width = int(cap.get(3))
@@ -16,7 +19,7 @@ fps = cap.get(cv2.CAP_PROP_FPS)
 fourcc = cv2.VideoWriter_fourcc(*'mp4v')
 
 
-out = cv2.VideoWriter('videos/output7.mp4', fourcc, fps, (frame_width, frame_height))
+out = cv2.VideoWriter(output_file, fourcc, fps, (frame_width, frame_height))
 
 ret = True
 
