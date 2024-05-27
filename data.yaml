@@ -1,0 +1,13 @@
+train: ../train/images
+val: ../valid/images
+test: ../test/images
+
+nc: 26
+names: ['agat', 'dr_jed', 'dr_pier', 'dzieci_o', 'in', 'inf', 'kier_pas', 'kon_dr', 'kon_park', 'n_prawza', 'n_zpraw', 'ogr_pred', 'park', 'piesz', 'prog', 'przeb_dr1', 'r_okr', 'stop', 'ustap', 'z_obu', 'z_pz', 'z_wj', 'z_wjciez', 'z_wyprz', 'z_zatrz', 'zam']
+
+roboflow:
+  workspace: seb-bulba
+  project: roadsigns_2
+  version: 2
+  license: CC BY 4.0
+  url: https://universe.roboflow.com/seb-bulba/roadsigns_2/dataset/2
