@@ -2,12 +2,12 @@ train: ../train/images
 val: ../valid/images
 test: ../test/images
 
-nc: 26
-names: ['agat', 'dr_jed', 'dr_pier', 'dzieci_o', 'in', 'inf', 'kier_pas', 'kon_dr', 'kon_park', 'n_prawza', 'n_zpraw', 'ogr_pred', 'park', 'piesz', 'prog', 'przeb_dr1', 'r_okr', 'stop', 'ustap', 'z_obu', 'z_pz', 'z_wj', 'z_wjciez', 'z_wyprz', 'z_zatrz', 'zam']
+nc: 22
+names: ['Czerwone swiatlo', 'Droga z pierwszenstwem', 'Dzieci', 'Ograniczenie predkosci do 100', 'Ograniczenie predkosci do 120', 'Ograniczenie predkosci do 20', 'Ograniczenie predkosci do 30', 'Ograniczenie predkosci do 40', 'Ograniczenie predkosci do 50', 'Ograniczenie predkosci do 60', 'Ograniczenie predkosci do 70', 'Ograniczenie predkosci do 80', 'Ograniczenie predkosci do 90', 'Przejscie dla pieszych', 'Stop', 'Ustap pierwszenstwa', 'Zakaz ruchu w obu kierunkach', 'Zakaz wjazdu', 'Zakaz wyprzedzania', 'Zakaz zatrzymywania sie', 'Zielone swiatlo', 'Zolte swiatlo']
 
 roboflow:
-  workspace: seb-bulba
-  project: roadsigns_2
-  version: 2
+  workspace: pti-rjlkx
+  project: pti-traffic-sign-recognition-2
+  version: 3
   license: CC BY 4.0
-  url: https://universe.roboflow.com/seb-bulba/roadsigns_2/dataset/2
+  url: https://universe.roboflow.com/pti-rjlkx/pti-traffic-sign-recognition-2/dataset/3
