@@ -5,13 +5,11 @@ from tkinter import ttk, messagebox
 import threading
 import os
 
-def process_video(file_name, choices):
+def process_video(file_name, choices, conf_value):
     input_file = "videos/" + file_name + ".mp4"
     output_file = "videos/" + file_name + "_out.mp4"
 
     model = YOLO('best.pt')
-
-    model.predict(classes=choices)
 
     cap = cv2.VideoCapture(input_file)
 
@@ -32,7 +30,7 @@ def process_video(file_name, choices):
         if ret:
             # conf - minimum confidence threshold for detections
             # persist - adding a new ID for every newly found and tracked object
-            results = model.track(frame, conf=0.2, persist=True)
+            results = model.track(frame, conf=conf_value, persist=True)
 
             frame = results[0].plot()
 
@@ -63,12 +61,17 @@ def start_processing():
     if yield_var.get():
         choices.append(15)
 
+    conf_value = conf_slider.get()
+
     # Disable the start button and update status
     start_button.config(state=tk.DISABLED)
     status_label.config(text="Processing...")
 
     # Start the video processing in a new thread
-    threading.Thread(target=process_video, args=(file_name, choices)).start()
+    threading.Thread(target=process_video, args=(file_name, choices, conf_value)).start()
+
+def update_conf_label(value):
+    conf_label.config(text=f"Confidence Threshold: {float(value):.1f}")
 
 # Create the main window
 root = tk.Tk()
@@ -95,12 +98,24 @@ ttk.Checkbutton(checkbox_frame, text="Przejście dla pieszych", variable=pedestr
 ttk.Checkbutton(checkbox_frame, text="Stop", variable=stop_var).grid(row=2, column=0, sticky=tk.W)
 ttk.Checkbutton(checkbox_frame, text="Ustąp pierwszeństwa", variable=yield_var).grid(row=3, column=0, sticky=tk.W)
 
+# Create a frame for the confidence slider
+slider_frame = ttk.Frame(root, padding="10")
+slider_frame.grid(row=2, column=0, sticky=(tk.W, tk.E))
+
+ttk.Label(slider_frame, text="Confidence Threshold:").grid(row=0, column=0, sticky=tk.W)
+conf_slider = ttk.Scale(slider_frame, from_=0, to=1.0, orient=tk.HORIZONTAL, command=update_conf_label)
+conf_slider.set(0.2)  # Default value
+conf_slider.grid(row=0, column=1, sticky=(tk.W, tk.E))
+
+conf_label = ttk.Label(slider_frame, text="Confidence Threshold: 0.2")
+conf_label.grid(row=1, column=0, columnspan=2, sticky=tk.W)
+
 # Create the start button and status label
 start_button = ttk.Button(root, text="Start", command=start_processing)
-start_button.grid(row=2, column=0, pady=10)
+start_button.grid(row=3, column=0, pady=10)
 
 status_label = ttk.Label(root, text="")
-status_label.grid(row=3, column=0, pady=10)
+status_label.grid(row=4, column=0, pady=10)
 
 # Run the application
 root.mainloop()
