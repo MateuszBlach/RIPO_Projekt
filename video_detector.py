@@ -57,8 +57,8 @@ def process_video(file_name, choices, conf_value, live):
     model.predict(classes=choices)
 
     if live:
-        cv2.namedWindow('Wyjście', cv2.WINDOW_NORMAL)
-        cv2.resizeWindow('Wyjście', 1280, 960)
+        cv2.namedWindow('Wyjscie', cv2.WINDOW_NORMAL)
+        cv2.resizeWindow('Wyjscie', 1280, 960)
 
     cap = cv2.VideoCapture(input_file)
 
@@ -90,12 +90,12 @@ def process_video(file_name, choices, conf_value, live):
                                 play_pedestrian()
                             elif dclass == 14.0:
                                 play_stop()
-                            if dclass == 15.0:
+                            elif dclass == 15.0:
                                 play_yield()
 
             frame = results[0].plot()
             if live:
-                cv2.imshow('Wyjście', frame)
+                cv2.imshow('Wyjscie', frame)
                 if cv2.waitKey(1) & 0xFF == ord('q'):
                     break
 
