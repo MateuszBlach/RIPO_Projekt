@@ -59,7 +59,7 @@ def process_video(file_name, choices, conf_value, live):
 
     if live:
         cv2.namedWindow('output', cv2.WINDOW_NORMAL)
-        cv2.resizeWindow('output', 640, 480)
+        cv2.resizeWindow('output', 1280, 960)
 
     cap = cv2.VideoCapture(input_file)
 
@@ -149,13 +149,13 @@ def update_conf_label(value):
 
 # Create the main window
 root = tk.Tk()
-root.title("YOLO Video Processing")
+root.title("Wykrywanie znaków")
 
 # Create a frame for the file name input
 file_frame = ttk.Frame(root, padding="10")
 file_frame.grid(row=0, column=0, sticky=(tk.W, tk.E))
 
-ttk.Label(file_frame, text="Enter video name (without .mp4):").grid(row=0, column=0, sticky=tk.W)
+ttk.Label(file_frame, text="Wprowadź nazwę pliku (bez .mp4):").grid(row=0, column=0, sticky=tk.W)
 file_name_entry = ttk.Entry(file_frame, width=30)
 file_name_entry.grid(row=0, column=1, sticky=(tk.W, tk.E))
 
@@ -178,21 +178,21 @@ ttk.Checkbutton(checkbox_frame, text="Ustąp pierwszeństwa", variable=yield_var
 slider_frame = ttk.Frame(root, padding="10")
 slider_frame.grid(row=2, column=0, sticky=(tk.W, tk.E))
 
-ttk.Label(slider_frame, text="Confidence Threshold:").grid(row=0, column=0, sticky=tk.W)
+ttk.Label(slider_frame, text="Dokładność wykrywania:").grid(row=0, column=0, sticky=tk.W)
 conf_slider = ttk.Scale(slider_frame, from_=0, to=1.0, orient=tk.HORIZONTAL, command=update_conf_label)
 conf_slider.set(0.2)  # Default value
 conf_slider.grid(row=0, column=1, sticky=(tk.W, tk.E))
 
-conf_label = ttk.Label(slider_frame, text="Confidence Threshold: 0.2")
+conf_label = ttk.Label(slider_frame, text="Aktualna wartość: 0.2")
 conf_label.grid(row=1, column=0, columnspan=2, sticky=tk.W)
 
 sound_var = tk.BooleanVar()
-ttk.Checkbutton(root, text="Sound alerts (live only)", variable=sound_var).grid(row=3, column=0, sticky=tk.W, pady=10)
+ttk.Checkbutton(root, text="Powiadomienia dźwiękowe (tylko dla trybu na żywo)", variable=sound_var).grid(row=3, column=0, sticky=tk.W, pady=10)
 
 # Create the start button and status label
-start_button = ttk.Button(root, text="Save to file", command=lambda: start_processing(False))
+start_button = ttk.Button(root, text="Zapisz do pliku", command=lambda: start_processing(False))
 start_button.grid(row=4, column=0, pady=10)
-start_button2 = ttk.Button(root, text="Show live in window", command=lambda: start_processing(True))
+start_button2 = ttk.Button(root, text="Wykrywanie na żywo", command=lambda: start_processing(True))
 start_button2.grid(row=5, column=0, pady=10)
 
 status_label = ttk.Label(root, text="")
