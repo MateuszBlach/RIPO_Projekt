@@ -5,14 +5,51 @@ import tkinter as tk
 from tkinter import ttk, messagebox
 import threading
 import os
+import time
+
+
+pygame.init()
+pygame.mixer.init()
+pedestrian_sound = pygame.mixer.Sound("assets/sounds/przejscie.mp3")
+stop_sound = pygame.mixer.Sound("assets/sounds/stop.mp3")
+yield_sound = pygame.mixer.Sound("assets/sounds/ustap.mp3")
+ped_time = 0
+stop_time = 0
+yield_time = 0
+global_time = 0
+
+
+def play_pedestrian():
+    global ped_time
+    global global_time
+    current_time = time.time()
+    if current_time - ped_time >= 5 and current_time - global_time >= 1:
+        pygame.mixer.Sound.play(pedestrian_sound)
+        ped_time = current_time
+        global_time = current_time
+
+
+def play_stop():
+    global stop_time
+    global global_time
+    current_time = time.time()
+    if current_time - stop_time >= 5 and current_time - global_time >= 1:
+        pygame.mixer.Sound.play(stop_sound)
+        stop_time = current_time
+        global_time = current_time
+
+
+def play_yield():
+    global yield_time
+    global global_time
+    current_time = time.time()
+    if current_time - yield_time >= 5 and current_time - global_time >= 1:
+        pygame.mixer.Sound.play(yield_sound)
+        yield_time = current_time
+        global_time = current_time
 
 
 def process_video(file_name, choices, conf_value, live):
-    pygame.init()
-    pygame.mixer.init()
-    pedestrian_sound = pygame.mixer.Sound("assets/sounds/przejscie.mp3")
-    stop_sound = pygame.mixer.Sound("assets/sounds/stop.mp3")
-    yield_sound = pygame.mixer.Sound("assets/sounds/ustap.mp3")
     input_file = "videos/" + file_name + ".mp4"
     if not live:
         output_file = "videos/" + file_name + "_out.mp4"
@@ -20,7 +57,9 @@ def process_video(file_name, choices, conf_value, live):
     model = YOLO('best.pt')
     model.predict(classes=choices)
 
-    cv2.namedWindow('output', cv2.WINDOW_NORMAL)
+    if live:
+        cv2.namedWindow('output', cv2.WINDOW_NORMAL)
+        cv2.resizeWindow('output', 640, 480)
 
     cap = cv2.VideoCapture(input_file)
 
@@ -37,42 +76,23 @@ def process_video(file_name, choices, conf_value, live):
 
     ret = True
 
-    pedestrian = False
-    stop = False
-    yieldd = False
-
     while ret:
         ret, frame = cap.read()
         if ret:
             # conf - minimum confidence threshold for detections
             # persist - adding a new ID for every newly found and tracked object
             results = model.track(frame, conf=conf_value, persist=True)
-            if live:
+            if live and sound_var.get():
                 for r in results:
                     if len(r.boxes.cls) > 0:
-                        new_pedestrian = False
-                        new_stop = False
-                        new_yield = False
                         for box in r.boxes.cls:
                             dclass = box.item()
                             if dclass == 13.0:
-                                if not pedestrian:
-                                    print('Pedestrian detected')
-                                    pygame.mixer.Sound.play(pedestrian_sound)
-                                new_pedestrian = True
+                                play_pedestrian()
                             elif dclass == 14.0:
-                                if not stop:
-                                    print('Stop detected')
-                                    pygame.mixer.Sound.play(stop_sound)
-                                new_stop = True
+                                play_stop()
                             if dclass == 15.0:
-                                if not yieldd:
-                                    print('Yield detected')
-                                    pygame.mixer.Sound.play(yield_sound)
-                                new_yield = True
-                        pedestrian = new_pedestrian
-                        stop = new_stop
-                        yieldd = new_yield
+                                play_yield()
 
             frame = results[0].plot()
             if live:
@@ -90,6 +110,8 @@ def process_video(file_name, choices, conf_value, live):
     cap.release()
     if not live:
         out.release()
+    if live:
+        cv2.destroyAllWindows()
 
     # Update the GUI after processing
     start_button.config(state=tk.NORMAL)
@@ -164,14 +186,17 @@ conf_slider.grid(row=0, column=1, sticky=(tk.W, tk.E))
 conf_label = ttk.Label(slider_frame, text="Confidence Threshold: 0.2")
 conf_label.grid(row=1, column=0, columnspan=2, sticky=tk.W)
 
+sound_var = tk.BooleanVar()
+ttk.Checkbutton(root, text="Sound alerts (live only)", variable=sound_var).grid(row=3, column=0, sticky=tk.W, pady=10)
+
 # Create the start button and status label
 start_button = ttk.Button(root, text="Save to file", command=lambda: start_processing(False))
-start_button.grid(row=3, column=0, pady=10)
+start_button.grid(row=4, column=0, pady=10)
 start_button2 = ttk.Button(root, text="Show live in window", command=lambda: start_processing(True))
-start_button2.grid(row=4, column=0, pady=10)
+start_button2.grid(row=5, column=0, pady=10)
 
 status_label = ttk.Label(root, text="")
-status_label.grid(row=5, column=0, pady=10)
+status_label.grid(row=6, column=0, pady=10)
 
 # Run the application
 root.mainloop()
