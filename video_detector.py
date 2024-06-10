@@ -2,11 +2,10 @@ import cv2
 import pygame
 from ultralytics import YOLO
 import tkinter as tk
-from tkinter import ttk, messagebox
+from tkinter import ttk, messagebox, filedialog
 import threading
 import os
 import time
-
 
 pygame.init()
 pygame.mixer.init()
@@ -50,16 +49,16 @@ def play_yield():
 
 
 def process_video(file_name, choices, conf_value, live):
-    input_file = "videos/" + file_name + ".mp4"
+    input_file = file_name
     if not live:
-        output_file = "videos/" + file_name + "_out.mp4"
+        output_file = "output/" + os.path.splitext(os.path.basename(file_name))[0] + "_out.mp4"
 
     model = YOLO('best.pt')
     model.predict(classes=choices)
 
     if live:
-        cv2.namedWindow('output', cv2.WINDOW_NORMAL)
-        cv2.resizeWindow('output', 1280, 960)
+        cv2.namedWindow('Wyjście', cv2.WINDOW_NORMAL)
+        cv2.resizeWindow('Wyjście', 1280, 960)
 
     cap = cv2.VideoCapture(input_file)
 
@@ -96,7 +95,7 @@ def process_video(file_name, choices, conf_value, live):
 
             frame = results[0].plot()
             if live:
-                cv2.imshow('output', frame)
+                cv2.imshow('Wyjście', frame)
                 if cv2.waitKey(1) & 0xFF == ord('q'):
                     break
 
@@ -115,16 +114,16 @@ def process_video(file_name, choices, conf_value, live):
 
     # Update the GUI after processing
     start_button.config(state=tk.NORMAL)
-    status_label.config(text="Processing complete")
+    status_label.config(text="Przetwarzanie zakończone")
 
     # Show a message box and play the video
-    messagebox.showinfo("Processing Complete", "The video processing is complete.")
+    messagebox.showinfo("Przetwarzanie zakończone", "Przetwarzanie filmu zostało zakończone.")
     if not live:
         os.system(f'start {output_file}')  # This will open the output file using the default video player on Windows
 
 
 def start_processing(live):
-    file_name = file_name_entry.get()
+    file_name = file_name_entry
     choices = []
     if pedestrian_var.get():
         choices.append(13)
@@ -137,14 +136,22 @@ def start_processing(live):
 
     # Disable the start button and update status
     start_button.config(state=tk.DISABLED)
-    status_label.config(text="Processing...")
+    status_label.config(text="Przetwarzanie...")
 
     # Start the video processing in a new thread
     threading.Thread(target=process_video, args=(file_name, choices, conf_value, live)).start()
 
 
 def update_conf_label(value):
-    conf_label.config(text=f"Confidence Threshold: {float(value):.1f}")
+    conf_label.config(text=f"Aktualna wartość: {float(value):.1f}")
+
+
+def select_file():
+    global file_name_entry
+    filename = filedialog.askopenfilename(title='Wybierz plik',
+                                          filetypes=(('Pliki wideo', '*.mp4'), ('Wszystkie pliki', '*.*')))
+    file_name_entry = filename
+    file_label.config(text=os.path.basename(filename))
 
 
 # Create the main window
@@ -155,9 +162,10 @@ root.title("Wykrywanie znaków")
 file_frame = ttk.Frame(root, padding="10")
 file_frame.grid(row=0, column=0, sticky=(tk.W, tk.E))
 
-ttk.Label(file_frame, text="Wprowadź nazwę pliku (bez .mp4):").grid(row=0, column=0, sticky=tk.W)
-file_name_entry = ttk.Entry(file_frame, width=30)
-file_name_entry.grid(row=0, column=1, sticky=(tk.W, tk.E))
+ttk.Button(file_frame, command=select_file, text='Wybierz plik').grid(row=0, column=0, sticky=(tk.W, tk.E))
+file_name_entry = ""
+file_label = ttk.Label(file_frame, text=file_name_entry)
+file_label.grid(row=0, column=1, sticky=tk.W)
 
 # Create a frame for the checkboxes
 checkbox_frame = ttk.Frame(root, padding="10")
@@ -187,7 +195,10 @@ conf_label = ttk.Label(slider_frame, text="Aktualna wartość: 0.2")
 conf_label.grid(row=1, column=0, columnspan=2, sticky=tk.W)
 
 sound_var = tk.BooleanVar()
-ttk.Checkbutton(root, text="Powiadomienia dźwiękowe (tylko dla trybu na żywo)", variable=sound_var).grid(row=3, column=0, sticky=tk.W, pady=10)
+ttk.Checkbutton(root, text="Powiadomienia dźwiękowe (tylko dla trybu na żywo)", variable=sound_var).grid(row=3,
+                                                                                                         column=0,
+                                                                                                         sticky=tk.W,
+                                                                                                         pady=10)
 
 # Create the start button and status label
 start_button = ttk.Button(root, text="Zapisz do pliku", command=lambda: start_processing(False))
