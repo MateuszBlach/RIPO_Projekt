@@ -51,6 +51,8 @@ def play_yield():
 def process_video(file_name, choices, conf_value, live):
     input_file = file_name
     if not live:
+        if not os.path.exists("output"):
+            os.mkdir("output")
         output_file = "output/" + os.path.splitext(os.path.basename(file_name))[0] + "_out.mp4"
 
     model = YOLO('best.pt')
